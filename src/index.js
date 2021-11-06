@@ -40,14 +40,31 @@ app.post("/account", (request, response) => {
     });
   }
 
-  customers.push({ cpf, name, id: uuidv4(), statment: [] });
+  customers.push({ cpf, name, id: uuidv4(), statement: [] });
 
   return response.status(201).send();
 });
 
 app.get("/statement", verifyIfExistsAccountCPF, (request, response) => {
   const { customer } = request;
-  return response.json(customer.statment);
+  return response.json(customer.statement);
+});
+
+app.post("/deposity", verifyIfExistsAccountCPF, (request, response) => {
+  const { amount, description } = req.body;
+
+  const {customer} = request;
+
+  const statementOperation = {
+    amount,
+    description,
+    created_at: new Date(),
+    type: 'credit',
+  }
+
+  customer.statement.push(statementOperation);
+
+  return response.status(201).send();
 });
 
 app.listen(3333);
